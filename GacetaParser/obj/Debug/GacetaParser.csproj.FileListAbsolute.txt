@@ -1,0 +1,5 @@
+C:\Users\jesus\Documents\Projects\GacetaParser\GacetaParser\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\jesus\Documents\Projects\GacetaParser\GacetaParser\bin\Debug\GacetaParser.exe
+C:\Users\jesus\Documents\Projects\GacetaParser\GacetaParser\bin\Debug\GacetaParser.pdb
+C:\Users\jesus\Documents\Projects\GacetaParser\GacetaParser\obj\Debug\GacetaParser.exe
+C:\Users\jesus\Documents\Projects\GacetaParser\GacetaParser\obj\Debug\GacetaParser.pdb
