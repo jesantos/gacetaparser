@@ -33,16 +33,33 @@ namespace GacetaParser
     public class Votacion
     {
         public string Legislatura;
-        public string Tipo;
+        public string Sesion;
         public string VotacionNum;
         public string Fecha;
         public string Descripcion;
         public List<Voto> Votos;
+        public bool Is60 = false;
 
-        public Regex RegFecha = new Regex("VOTETAKEN:(.*)");
-        public Regex RegDesc = new Regex("PROPOSEDBY:(.*)");
+        
+        protected Regex RegFecha = new Regex("VOTETAKEN:(.*)");
+        protected Regex RegDesc = new Regex("PROPOSEDBY:(.*)");
+
+        protected string PropHeader = "PROPOSEDBY";
+        protected string DateHeader = "VOTETAKEN";
+
+        protected char VotoSeparator = ';';
 
         public Votacion(string filePath)
+        {
+            Parse(filePath);
+        }
+
+        public Votacion()
+        { 
+        
+        }
+
+        public void Parse(string filePath)
         {
             if (!File.Exists(filePath))
                 return;
@@ -53,15 +70,14 @@ namespace GacetaParser
                 Votos = new List<Voto>();
 
                 string line = tr.ReadLine();
-                int pos = 0;
 
                 while (!string.IsNullOrEmpty(line))
                 {
-                    if (line.Contains("PROPOSEDBY"))
+                    if (line.Contains(PropHeader))
                     {
                         Descripcion = Utils.LookValue(line, RegDesc, 1);
                     }
-                    else if (line.Contains("VOTETAKEN"))
+                    else if (line.Contains(DateHeader))
                     {
                         Fecha = Utils.LookValue(line, RegFecha, 1);
                     }
@@ -69,8 +85,8 @@ namespace GacetaParser
                     {
                         if (line.Length > 5)
                         {
-                            if (line[1] == ':' || line[2] == ':' || line[3] == ':')
-                                Votos.Add(new Voto(line));
+                            if (line[1] == VotoSeparator || line[2] == VotoSeparator || line[3] == VotoSeparator)
+                                Votos.Add(new Voto(line, Is60));
                         }
                     }
 
@@ -96,7 +112,7 @@ namespace GacetaParser
             foreach (Voto v in Votos)
             {
                 ret += "\"" + Legislatura + "\",";
-                ret += "\"" + Tipo + "\",";
+                ret += "\"" + Sesion + "\",";
                 ret += "\"" + VotacionNum + "\",";
                 ret += "\"" + Descripcion + "\",";
                 ret += "\"" + Fecha + "\",";
@@ -125,7 +141,7 @@ namespace GacetaParser
                 append = false;
 
                 ret += "\"Legislatura\",";
-                ret += "\"Tipo\",";
+                ret += "\"Sesion\",";
                 ret += "\"VotacionNum\",";
                 ret += "\"Descripcion\",";
                 ret += "\"Fecha\",";
@@ -146,7 +162,7 @@ namespace GacetaParser
                 ret="";
  
                 ret += "\"" + Legislatura + "\",";
-                ret += "\"" + Tipo + "\",";
+                ret += "\"" + Sesion + "\",";
                 ret += "\"" + VotacionNum + "\",";
                 ret += "\"" + Descripcion + "\",";
                 ret += "\"" + Fecha + "\",";

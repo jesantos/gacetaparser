@@ -16,13 +16,25 @@ namespace GacetaParser
 
         // indice: votante partido, partido, posicion
         public Regex RegVoto = new Regex("(.*):(.*) (.*),(.*),(.*)");
+        
+        // solo para el voto 60
+        public Regex RegVoto60 = new Regex("(.*),(.*),(.*),(.*),(.*)");
 
-        public Voto(string content)
+        public Voto(string content, bool is60)
         {
             if (string.IsNullOrEmpty(content))
                 return;
+            List<string> div;
 
-            List<string> div = Utils.LookValueGroup(content, RegVoto, new int[] { 1,2,4,5 });
+            if (is60)
+            {
+                div = Utils.LookValueGroup(content, RegVoto60, new int[] { 1, 3, 4, 5 });
+            }
+            else
+            {
+                div = Utils.LookValueGroup(content, RegVoto, new int[] { 1, 2, 4, 5 });
+            }
+
 
             if (div.Count > 3)
             {
