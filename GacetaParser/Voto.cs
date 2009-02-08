@@ -68,12 +68,15 @@ namespace GacetaParser
                         Partido = Partido.PAS;
                         break;
                     default:                        
-                        Partido = Partido.TODOS;
+                        Partido = Partido.IND;
                         break;
                 }
 
                 switch (div[3])
                 {
+                    case "0":
+                        Posicion = Posicion.Ausente;
+                        break;
                     case "1":
                         Posicion = Posicion.Quorum;
                         break;
@@ -90,7 +93,7 @@ namespace GacetaParser
                         Posicion = Posicion.Total;
                         break;
                     default:
-                        Posicion = Posicion.Ausente;
+                        Posicion = Posicion.Invalido;
                         break;
                 }
 

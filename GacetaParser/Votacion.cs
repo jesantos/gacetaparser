@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace GacetaParser
 {
     public enum Partido
     {
-        TODOS,
+        IND,
         PRI,
         PAN,
         PRD,
@@ -27,7 +28,8 @@ namespace GacetaParser
         Abstencion,
         Contra,
         Total,
-        Ausente
+        Ausente,
+        Invalido
     }
 
     public class Votacion
@@ -37,6 +39,7 @@ namespace GacetaParser
         public string VotacionNum;
         public string Fecha;
         public string Descripcion;
+        public CultureInfo Culture = CultureInfo.CreateSpecificCulture("es-MX");
         public List<Voto> Votos;
         public bool Is60 = false;
 
@@ -47,7 +50,7 @@ namespace GacetaParser
         protected string PropHeader = "PROPOSEDBY";
         protected string DateHeader = "VOTETAKEN";
 
-        protected char VotoSeparator = ';';
+        protected char VotoSeparator = ':';
 
         public Votacion(string filePath)
         {
@@ -80,6 +83,16 @@ namespace GacetaParser
                     else if (line.Contains(DateHeader))
                     {
                         Fecha = Utils.LookValue(line, RegFecha, 1);
+
+                        Sesion = "N/A";
+
+                        DateTime dt = new DateTime(1981, 10, 19);
+                        if (DateTime.TryParse(Fecha,Culture,  System.Globalization.DateTimeStyles.None, out dt)) 
+                        {
+                            //Sesion = dt.ToString();    
+                            Sesion = dt.ToString("MM/dd/yyyy HH:mm:ss");
+
+                        }
                     }
                     else
                     {
@@ -107,16 +120,15 @@ namespace GacetaParser
             if(Votos == null)
                 return base.ToString();
             
-            string ret = "";
+            string ret = "";            
 
             foreach (Voto v in Votos)
             {
                 ret += "\"" + Legislatura + "\",";
-                ret += "\"" + Sesion + "\",";
+                ret += "\"" + Sesion  + "\",";
                 ret += "\"" + VotacionNum + "\",";
-                ret += "\"" + Descripcion + "\",";
-                ret += "\"" + Fecha + "\",";
-                ret += "\"" + v.Indice + "\",";
+                ret += "\"" + Descripcion.Replace(",","") + "\",";
+                ret += "\"" + Fecha + "\",";                
                 ret += "\"" + v.Partido + "\",";
                 ret += "\"" + v.Posicion + "\",";
                 ret += "\"" + v.Votante + "\",";
@@ -141,11 +153,10 @@ namespace GacetaParser
                 append = false;
 
                 ret += "\"Legislatura\",";
-                ret += "\"Sesion\",";
-                ret += "\"VotacionNum\",";
-                ret += "\"Descripcion\",";
                 ret += "\"Fecha\",";
-                ret += "\"Indice\",";
+                ret += "\"Archivo\",";
+                ret += "\"Descripcion\",";
+                ret += "\"FechaTexto\",";                
                 ret += "\"Partido\",";
                 ret += "\"Posicion\",";
                 ret += "\"Votante\",";                
@@ -162,11 +173,10 @@ namespace GacetaParser
                 ret="";
  
                 ret += "\"" + Legislatura + "\",";
-                ret += "\"" + Sesion + "\",";
+                ret += "" + Sesion + ",";
                 ret += "\"" + VotacionNum + "\",";
-                ret += "\"" + Descripcion + "\",";
-                ret += "\"" + Fecha + "\",";
-                ret += "\"" + v.Indice + "\",";
+                ret += "\"" + Descripcion.Replace(",","") + "\",";
+                ret += "\"" + Fecha + "\",";                
                 ret += "\"" + v.Partido + "\",";
                 ret += "\"" + v.Posicion + "\",";
                 ret += "\"" + v.Votante + "\",";

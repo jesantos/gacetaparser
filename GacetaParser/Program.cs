@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using System.Text.RegularExpressions;
 
 namespace GacetaParser
@@ -11,17 +12,13 @@ namespace GacetaParser
     {
 
         static string dirSave = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\Resultados";
-        static string dirLook = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\Voto 60";
-        static string legislatura = "60";
+        static string dirLook = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\legislaturas\57";        
 
         static void Main(string[] args)
         {
-
-
-            AppendLegislaturas();
-
-            //ParseLegislatura(args);
             
+            //AppendLegislaturas();
+            ParseLegislatura(args);
 
         }
 
@@ -51,18 +48,20 @@ namespace GacetaParser
 
         private static void ParseLegislatura(string[] args)
         {
-            if (args.Length > 0)
+            /*if (args.Length > 0)
             {
                 dirLook = args[0];
                 dirSave = args[1];
 
                 if (args.Length == 3)
                 {
-                    Program.legislatura = args[2];
+                    legislatura = args[2];
                 }
             }
 
-            string[] sesiones = Directory.GetDirectories(dirLook);
+            /* antes los directorios representaban las sesiones. las sesiones ahora se eliminan, intentamos usar solo la fecha
+             * 
+             * string[] sesiones = Directory.GetDirectories(dirLook);
 
             if (sesiones.Length > 0)
             {
@@ -73,10 +72,14 @@ namespace GacetaParser
                 }
             }
 
+             * */
+
+            parseSesion(dirLook);
+
             Console.ReadLine();
         }
 
-        private static void ParseSesion(string dir)
+        private static void parseSesion(string dir)
         {                        
             string sesion = "";
 
@@ -84,28 +87,30 @@ namespace GacetaParser
             Regex regVotNum = new Regex(@"^(.*)\\(.*).txt$");
 
             Match m = regSesion.Match(dir);
+            string legislatura = "";
 
             if (m != null && m.Groups.Count>1)
             {
-                sesion = m.Groups[2].Value;
+                legislatura = m.Groups[2].Value;
             }
 
-            Console.WriteLine("Trabajando sesión " + sesion);
+            Console.WriteLine("Trabajando votos");
 
             string[] dirFiles = Directory.GetFiles(dir, "*.txt");
 
             for (int i = 0; i < dirFiles.Length; i++)
             {
                 Console.WriteLine(dirFiles[i]);
+
                 Votacion vt ;
 
                 if (legislatura == "60")
                     vt = new Votacion60(dirFiles[i]);
                 else
-                    vt = new Votacion(dirFiles[1]);
+                    vt = new Votacion(dirFiles[i]);
 
-                vt.Legislatura = Program.legislatura;
-                vt.Sesion = sesion;
+                vt.Legislatura = legislatura;
+                //vt.Sesion = sesion;
                 vt.VotacionNum = dirFiles[i];
                 m = regVotNum.Match(dirFiles[i]);
 
@@ -114,7 +119,7 @@ namespace GacetaParser
                     vt.VotacionNum = m.Groups[2].Value;
                 }
                 
-                if (vt.Save(Program.dirSave + "\\voto_"+ Program.legislatura +"_"+sesion+".csv"))
+                if (vt.Save(Program.dirSave + "\\voto_"+ legislatura +"_"+sesion+".csv"))
                 {
                     Console.WriteLine("Listo!");
                 }
