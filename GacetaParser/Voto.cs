@@ -58,8 +58,14 @@ namespace GacetaParser
                     case "PT":
                         Partido = Partido.PT;
                         break;
+                    case "NA":
+                        Partido = Partido.NA;
+                        break;
                     case "PSN":
                         Partido = Partido.PSN;
+                        break;
+                    case "PSD":
+                        Partido = Partido.PSD;
                         break;
                     case "CONV":
                         Partido = Partido.CONV;

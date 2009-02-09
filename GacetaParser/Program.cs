@@ -12,21 +12,28 @@ namespace GacetaParser
     {
 
         static string dirSave = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\Resultados";
-        static string dirLook = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\legislaturas\57";        
+        static string dirLook = @"C:\Users\jesus\Documents\Projects\GacetaParser\files\legislaturas\57";
+        static string dir = @"C:\Users\jesus\Desktop\dips\";
+        
 
         static void Main(string[] args)
         {
             
-            //AppendLegislaturas();
-            ParseLegislatura(args);
+            //appendLegislaturas();
+            //parseLegislatura(args);
+            //GetDiputados.DownloadDiputadoInfo("5");
+            //saveDiputadosInfo();
+            //saveDiputadosComisiones();
+            saveDiputadosCV();
 
+            Console.Read();
         }
 
-        private static void AppendLegislaturas()
+        private static void appendLegislaturas()
         { 
             string[] files = Directory.GetFiles(dirSave, "*.csv");
 
-            string result = dirSave + "\\megaVoto.txt";
+            string result = dirSave + "\\VotoTodos.csv";
 
             if (files != null && files.Length > 0)
             {
@@ -46,7 +53,7 @@ namespace GacetaParser
             Console.ReadKey();
         }
 
-        private static void ParseLegislatura(string[] args)
+        private static void parseLegislatura(string[] args)
         {
             /*if (args.Length > 0)
             {
@@ -126,5 +133,93 @@ namespace GacetaParser
 
             }            
         }
+
+        private static void saveDiputadosInfo()
+        {
+            StreamWriter sw = new StreamWriter(dir + "vals.csv", false, System.Text.Encoding.Default);
+            sw.WriteLine("Cabecera,Circunscripcion,Curul,Eleccion,Email,Entidad,Fnac,PageId,Suplente");
+            foreach (string s in GetDiputados.Ids)
+            {
+                try
+                {
+                    Votante v = GetDiputados.GetDiputadoInfo(s);
+                    string row = string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"", v.Cabecera, v.Circunscripcion, v.Curul, v.Eleccion, v.Email, v.Entidad, v.Fnac, v.PageId, v.Suplente);
+                    sw.WriteLine(row);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    sw.WriteLine(e.ToString());
+                }
+            }
+
+            sw.Close();
+            sw.Dispose();
+
+
+
+        }
+
+        private static void saveDiputadosComisiones()
+        {
+            StreamWriter sw = new StreamWriter(dir + "vals.csv", false, System.Text.Encoding.Default);
+            sw.WriteLine("VotanteId,Comision,ComisionId");
+            foreach (string s in GetDiputados.Ids)
+            {
+                try
+                {
+                    Votante v = GetDiputados.GetDiputadoInfo(s);
+
+                    foreach (Comision c in v.Comisiones)
+                    {
+                        string row = string.Format("\"{0}\",\"{1}\",\"{2}\"", v.PageId, c.Nombre, c.Id);
+                        sw.WriteLine(row);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    sw.WriteLine(e.ToString());
+                }
+            }
+
+            sw.Close();
+            sw.Dispose();
+
+
+
+        }
+
+        private static void saveDiputadosCV()
+        {
+            StreamWriter sw = new StreamWriter(dir + "vals.csv", false, System.Text.Encoding.Default);
+            sw.WriteLine("VotanteId,Evento,Detalles,Periodo");
+            foreach (string s in GetDiputados.Ids)
+            {
+                try
+                {
+                    Votante v = GetDiputados.GetDiputadoInfo(s);
+
+                    foreach (CvItem c in v.Curricula)
+                    {
+                        string row = string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", v.PageId, c.Evento.Replace(",",""), c.Detalles.Replace(",",""), c.Periodo);
+                        sw.WriteLine(row);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    sw.WriteLine(e.ToString());
+                }
+            }
+
+            sw.Close();
+            sw.Dispose();
+
+
+
+        }
+
+
     }
 }

@@ -18,7 +18,9 @@ namespace GacetaParser
         PT,
         PSN,
         CONV,
-        PAS
+        PAS,
+        NA,
+        PSD
     }
 
     public enum Posicion
